@@ -114,7 +114,7 @@
         (reset! results-timezone ((resolve 'metabase.query-processor.timezone/results-timezone-id)))
         (spreadsheet/add-row! sheet (map (some-fn :display_name :name) cols)))
 
-      (write-row! [_ row _]
+      (write-row! [_ row _ _]
         (binding [*cell-styles*      cell-styles
                   *results-timezone-id* @results-timezone]
           (spreadsheet/add-row! sheet row)))
