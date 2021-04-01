@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build container image
-      run: docker build -t test-container-image .
+      run: DOCKER_BUILDKIT=1 docker build -t test-container-image . --no-cache
     - name: Launch container
       run: docker run -dp 3000:3000 test-container-image
       timeout-minutes: 5

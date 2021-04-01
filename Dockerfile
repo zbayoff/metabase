@@ -4,8 +4,6 @@
 
 FROM metabase/ci:lein-2.9.5-clojure-1.10.3.814 as frontend
 
-ARG MB_EDITION=oss
-
 WORKDIR /app/source
 
 # frontend dependencies
@@ -18,8 +16,6 @@ RUN yarn install --frozen-lockfile
 ###################
 
 FROM metabase/ci:lein-2.9.5-clojure-1.10.3.814 as backend
-
-ARG MB_EDITION=oss
 
 WORKDIR /app/source
 
