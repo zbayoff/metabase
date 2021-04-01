@@ -2,7 +2,7 @@
 # STAGE 1.1: builder frontend
 ###################
 
-FROM metabase/ci:latest as frontend
+FROM metabase/ci:lein-2.9.5-clojure-1.10.3.814 as frontend
 
 ARG MB_EDITION=oss
 
@@ -17,7 +17,7 @@ RUN yarn install --frozen-lockfile
 # STAGE 1.2: builder backend
 ###################
 
-FROM metabase/ci:latest as backend
+FROM metabase/ci:lein-2.9.5-clojure-1.10.3.814 as backend
 
 ARG MB_EDITION=oss
 
@@ -31,7 +31,7 @@ RUN lein deps :tree
 # STAGE 1.3: main builder
 ###################
 
-FROM metabase/ci:latest as builder
+FROM metabase/ci:lein-2.9.5-clojure-1.10.3.814 as builder
 
 ARG MB_EDITION=oss
 
