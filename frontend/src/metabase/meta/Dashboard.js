@@ -1,3 +1,4 @@
+import MetabaseSettings from "metabase/lib/settings";
 import Question from "metabase-lib/lib/Question";
 import { ExpressionDimension } from "metabase-lib/lib/Dimension";
 
@@ -46,7 +47,7 @@ export const PARAMETER_SECTIONS: ParameterSection[] = [
     description: t`User ID, product ID, event ID, etc.`,
     options: [],
   },
-  {
+  MetabaseSettings.get("field-filter-operators-enabled?") && {
     id: "number",
     name: t`Number`,
     description: t`Subtotal, Age, Price, Quantity, etc.`,
@@ -58,7 +59,7 @@ export const PARAMETER_SECTIONS: ParameterSection[] = [
     description: t`Category, Type, Model, Rating, etc.`,
     options: [],
   },
-];
+].filter(Boolean);
 
 for (const option of PARAMETER_OPTIONS) {
   const sectionId = option.type.split("/")[0];

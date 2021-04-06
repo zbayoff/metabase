@@ -1,3 +1,4 @@
+import MetabaseSettings from "metabase/lib/settings";
 import type { DatasetQuery } from "metabase-types/types/Card";
 import type {
   TemplateTag,
@@ -160,9 +161,32 @@ export const PARAMETER_OPTIONS: ParameterOption[] = [
     type: "id",
     name: t`ID`,
   },
-  ...OPTIONS_WITH_OPERATOR_SUBTYPES.map(option =>
-    buildOperatorSubtypeOptions(option),
-  ),
+  ...(MetabaseSettings.get("field-filter-operators-enabled?")
+    ? OPTIONS_WITH_OPERATOR_SUBTYPES.map(option =>
+        buildOperatorSubtypeOptions(option),
+      )
+    : [
+        {
+          type: "category",
+          name: t`Category`,
+        },
+        {
+          type: "location/city",
+          name: t`City`,
+        },
+        {
+          type: "location/state",
+          name: t`State`,
+        },
+        {
+          type: "location/zip_code",
+          name: t`ZIP or Postal Code`,
+        },
+        {
+          type: "location/country",
+          name: t`Country`,
+        },
+      ]),
 ].flat();
 
 function buildOperatorSubtypeOptions({ section, operatorType, sectionName }) {
@@ -185,7 +209,7 @@ function fieldFilterForParameter(parameter: Parameter) {
 function fieldFilterForParameterType(
   parameterType: ParameterType,
 ): FieldPredicate {
-  const [type] = splitType(parameterType);
+  const [type, subtype] = splitType(parameterType);
   switch (type) {
     case "date":
       return (field: Field) => field.isDate();
@@ -194,11 +218,24 @@ function fieldFilterForParameterType(
     case "category":
       return (field: Field) => field.isCategory();
     case "location":
-      return (field: Field) =>
-        field.isCity() ||
-        field.isState() ||
-        field.isZipCode() ||
-        field.isCountry();
+      return (field: Field) => {
+        if (MetabaseSettings.get("field-filter-operators-enabled?")) {
+          return field.isLocation();
+        } else {
+          switch (subtype) {
+            case "city":
+              return field.isCity();
+            case "state":
+              return field.isState();
+            case "zip_code":
+              return field.isZipCode();
+            case "country":
+              return field.isCountry();
+            default:
+              return false;
+          }
+        }
+      };
     case "number":
       return (field: Field) => field.isNumber() && !field.isCoordinate();
   }
@@ -487,6 +524,10 @@ export function getParameterIconName(parameterType: ?ParameterType) {
 }
 
 export function mapUIParameterToQueryParameter(type, value, target) {
+  if (!MetabaseSettings.get("field-filter-operators-enabled?")) {
+    return { type, value, target };
+  }
+
   const [fieldType, maybeOperatorName] = splitType(type);
   const operatorName = getParameterOperatorName(maybeOperatorName);
 
