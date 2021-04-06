@@ -727,22 +727,6 @@ jobs:
                   - /home/circleci/metabase/metabase/node_modules
                   - /home/circleci/.cache/Cypress
 
-  fe-tests-unit:
-    executor: node
-    steps:
-      - run-yarn-command:
-          command-name: Run frontend unit tests
-          command: run test-unit
-          skip-when-no-change: true
-
-  fe-tests-timezones:
-    executor: node
-    steps:
-      - run-yarn-command:
-          command-name: Run frontend timezone tests
-          command: run test-timezones
-          skip-when-no-change: true
-
   # Unlike the other build-uberjar steps, this step should be run once overall and the results can be shared between
   # OSS and EE uberjars.
   build-uberjar-drivers:
@@ -1181,12 +1165,6 @@ workflows:
       - fe-deps:
           requires:
             - checkout
-      - fe-tests-unit:
-          requires:
-            - fe-deps
-      - fe-tests-timezones:
-          requires:
-            - fe-deps
 
       - fe-tests-cypress:
           matrix:
